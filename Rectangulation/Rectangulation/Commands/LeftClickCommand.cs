@@ -19,7 +19,7 @@ namespace Rectangulation.Commands
             var canvas = (Canvas)values[0];
             var vmodel = (MainWindowVM)values[1];
             var mousePos = Mouse.GetPosition(canvas);
-            if (!SelectRectangle(mousePos.X, mousePos.Y, vmodel))
+            if ((vmodel.CurrentPolygon != null) || (!TrySelectRectangle(mousePos.X, mousePos.Y, vmodel)))
                 AddPointToPolygon(mousePos.X, mousePos.Y, vmodel);
         }
 
@@ -52,18 +52,11 @@ namespace Rectangulation.Commands
         /// <param name="x">Координата X нажатия левой кнопки мыши</param>
         /// <param name="y">Координата Y нажатия левой кнопки мыши</param>
         /// <param name="vmodel">Экземляр MainWindowVM</param>
-        private bool SelectRectangle(double x, double y, MainWindowVM vmodel)
+        private bool TrySelectRectangle(double x, double y, MainWindowVM vmodel)
         {
             foreach (var rectangle in vmodel.Rectangles)
             {
-                if (((x >= rectangle.Geometry.Bounds.X - 2) &&
-                    (y >= rectangle.Geometry.Bounds.Y - 2) &&
-                    (x <= rectangle.Geometry.Bounds.X + 2) &&
-                    (y <= rectangle.Geometry.Bounds.Y + 2)) ||
-                    ((x <= rectangle.Geometry.Bounds.X + rectangle.Geometry.Bounds.Width + 2) &&
-                    (y <= rectangle.Geometry.Bounds.Y + rectangle.Geometry.Bounds.Height + 2) &&
-                    (x >= rectangle.Geometry.Bounds.X + rectangle.Geometry.Bounds.Width - 2) &&
-                    (y >= rectangle.Geometry.Bounds.Y + rectangle.Geometry.Bounds.Height - 2)))
+                if (rectangle.HitToBorder(x, y))
                 {
                     vmodel.SelectedRectangle = null;
                     vmodel.SelectedRectangle = rectangle;

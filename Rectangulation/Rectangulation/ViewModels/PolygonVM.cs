@@ -59,12 +59,9 @@ namespace Rectangulation
         public void AddPoint(double x, double y)
         {
             Polygon.AddPoint(x, y);
-            if (Geometry == null)
+            var figure = GetFigure();
+            if (figure.Segments.Count <= 0)
                 return;
-            var pathGeom = (PathGeometry)Geometry;
-            if (pathGeom.Figures.Count <= 0) return;
-            var figure = (PathFigure)pathGeom.Figures[0];
-            if (figure.Segments.Count <= 0) return;
             var segment = (PolyLineSegment)figure.Segments[0];
             segment.Points.Add(new Point(x, y));
         }
@@ -74,14 +71,25 @@ namespace Rectangulation
         /// </summary>
         public void Close()
         {
-            if (Geometry == null)
+            var figure = GetFigure();
+            if (figure.Segments.Count <= 0)
                 return;
-            var pathGeom = (PathGeometry)Geometry;
-            if (pathGeom.Figures.Count <= 0) return;
-            var figure = (PathFigure)pathGeom.Figures[0];
-            if (figure.Segments.Count <= 0) return;
             var segment = (PolyLineSegment)figure.Segments[0];
-            segment.Points.Add(figure.StartPoint);
+            segment?.Points.Add(figure.StartPoint);
+        }
+
+        /// <summary>
+        /// Метод получения фигуры
+        /// </summary>
+        /// <returns>ссылку на фигуру</returns>
+        private PathFigure GetFigure()
+        {
+            if (Geometry == null)
+                return null;
+            var pathGeom = (PathGeometry)Geometry;
+            if (pathGeom.Figures.Count <= 0)
+                return null;
+            return (PathFigure)pathGeom.Figures[0];
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Rectangulation
         /// <summary>
         /// Свойство кисть контура
         /// </summary>
-        public override Brush Stroke => Rectangle.Fill;
+        public override Brush Stroke => Rectangle.Stroke;
 
         /// <summary>
         /// Свойство толщина линии
@@ -56,7 +56,17 @@ namespace Rectangulation
             set
             {
                 _selected = value;
-                Rectangle.Fill = _selected ? Brushes.Red : Brushes.Black;
+                if (_selected)
+                {
+                    Rectangle.Fill = Brushes.Transparent;
+                    Rectangle.Stroke = Brushes.Red;
+                }
+                else
+                {
+                    Rectangle.Fill = Brushes.Black;
+                    Rectangle.Stroke = Brushes.Black;
+                }
+                OnPropertyChanged("Fill");
                 OnPropertyChanged("Stroke");
             }
         }
@@ -69,6 +79,24 @@ namespace Rectangulation
         public RectangleVM(Rectangle rectangle)
         {
             Rectangle = rectangle;
+            Geometry = new RectangleGeometry(Rectangle.Rect);
+        }
+
+        /// <summary>
+        /// Метод попадания в границы прямоугольника
+        /// </summary>
+        /// <param name="x">Координата X нажатия левой кнопки мыши</param>
+        /// <param name="y">Координата Y нажатия левой кнопки мыши</param>
+        /// <returns>Возвращает true, если клик рядом с границей</returns>
+        public bool HitToBorder(double x, double y)
+        {
+            return Rectangle.HitToBorder(x, y);
+        }
+
+        public void Move(double x, double y)
+        {
+            Rectangle.Y = y;
+            Rectangle.X = x;
             Geometry = new RectangleGeometry(Rectangle.Rect);
         }
     }

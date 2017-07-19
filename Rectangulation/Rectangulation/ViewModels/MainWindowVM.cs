@@ -83,7 +83,7 @@ namespace Rectangulation
         /// <summary>
         /// Комманда нажатия кнопки Ректаннуляция
         /// </summary>
-        public RectangulationCommand AddRectangleCommand { get; }
+        public RectangulationCommand RectangulationCommand { get; }
 
         /// <summary>
         /// Комманда нажатия кнопки Очистить
@@ -95,7 +95,7 @@ namespace Rectangulation
         /// </summary>
         public MainWindowVM()
         {
-            AddRectangleCommand = new RectangulationCommand();
+            RectangulationCommand = new RectangulationCommand();
             ClearCommand = new ClearCommand();
             LeftClickCommand = new LeftClickCommand();
             RightClickCommand = new RightClickCommand();
@@ -117,21 +117,44 @@ namespace Rectangulation
             DrawingPoligons = true;
         }
 
-        /// <summary>
-        /// Метод добавления точки в полигон
-        /// </summary>
-        /// <param name="x">Координата X точки</param>
-        /// <param name="y">Координата Y точки</param>
-        public void AddPointToPolygon(double x, double y)
+
+        private bool MovingRectangle { get; set; } = false;
+
+        public void MouseDown(Point mousePos)
         {
-            if (CurrentPolygon == null)
+            foreach (var rectangle in Rectangles)
             {
-                CurrentPolygon = new PolygonVM(x, y);
-                Polygons.Add(CurrentPolygon);
+                if (rectangle.HitToBorder(mousePos.X, mousePos.Y))
+                {
+                    SelectedRectangle = rectangle;
+                    MovingRectangle = true;
+                    return;
+                }
             }
-            else
-                CurrentPolygon.AddPoint(x, y);
-            OnPropertyChanged();
         }
+
+        public void MouseMove(Point mousePos)
+        {
+            if ((SelectedRectangle != null) && (MovingRectangle))
+            {
+                SelectedRectangle.Move(mousePos.X, mousePos.Y);
+                OnPropertyChanged("Geometry");
+            }
+        }
+
+        public void MouseUp(Point mousePos)
+        {
+            if (MovingRectangle)
+            {
+                MovingRectangle = false;
+                if (SelectedRectangle != null)
+                {
+                    SelectedRectangle.Move(mousePos.X, mousePos.Y);
+                    OnPropertyChanged("Geometry");
+                }
+            }
+        }
+
+        public RectangleGeometry Geometry { get; set; }
     }
 }

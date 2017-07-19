@@ -46,9 +46,14 @@ namespace Rectangulation
         }
 
         /// <summary>
-        /// Свойство кисть заливки и контура
+        /// Свойство кисть заливки
         /// </summary>
         public Brush Fill { get; set; }
+
+        /// <summary>
+        /// Свойство кисть контура
+        /// </summary>
+        public Brush Stroke { get; set; }
 
         /// <summary>
         /// Свойство нумерации прямоугольника
@@ -74,7 +79,24 @@ namespace Rectangulation
             Id = LastId;
             LastId = LastId + 1;
         }
-        
-        
+
+        /// <summary>
+        /// Метод попадания в границы прямоугольника
+        /// </summary>
+        /// <param name="x">Координата X нажатия левой кнопки мыши</param>
+        /// <param name="y">Координата Y нажатия левой кнопки мыши</param>
+        /// <returns>Возвращает true, если клик рядом с границей</returns>
+        public bool HitToBorder(double x, double y)
+        {
+            return ((x >= X - 2) &&
+                    (y >= Y - 2) &&
+                    (x <= X + 2 + Width) &&
+                    (y <= Y + 2 + Height))
+                   &&
+                   ((x <= X + 2) ||
+                    (y <= Y + 2) ||
+                    (x >= X - 2 + Width) ||
+                    (y >= Y - 2 + Height));
+        }
     }
 }
